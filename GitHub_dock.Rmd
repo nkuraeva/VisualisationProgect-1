@@ -1,0 +1,53 @@
+---
+title: "World Egg Day."
+author: "Natalia Kuraeva"
+date: '2022-10-13'
+output: html_document
+---
+#unexpected#enlightenment#useless_knowledge#beautiful#love_graphics
+World Egg Day was established in Vienna in 1996 when it was decided to celebrate the strength of the egg on the second Friday of October every year. Since then, egg lovers around the world have come up with creative new ways to honor this incredible source of nutrients, and the celebration has grown and changed over time. (https://www.internationalegg.com/ru/our-work/world-egg-day/)
+I also decided to celebrate this holiday and created a couple of charts that give everyone the opportunity to look at the trends in the production and consumption of this wonderful product in different regions of our beautiful planet
+
+Research Data:
+
+https://countrymeters.info/ru
+https://ourworldindata.org/grapher/egg-production-thousand-tonnes
+https://ourworldindata.org/grapher/per-capita-egg-consumption-kilograms-per-year
+
+
+
+
+
+```{r echo=FALSE}
+library(readr)
+library(ggplot2)
+data1 <- read_csv("eggDayPro/egg-production-thousand-tonnes.csv")
+
+data1 <- dplyr::filter(data1, data1$Entity == c("North America", "South America", "Asia", "Europe", "Africa"))
+names(data1)[names(data1) == 'Eggs | 00001783 || Production | 005510 || tonnes'] <- 'Eggs Production (tonnes)'
+data1$"Population total" <- c(316251854, 358869150, 409205629, 469820973, 541048445, 622000089, 708431012, 801297422, 905090228, 1026282787, 1167559520, 1324420033, 1832505667, 2065197639, 2324699667, 2574430631, 2835793264, 3136215757, 3416291383, 3668401182, 3907768984, 4140832077, 4367697740, 4581186479, 621601572, 647664790, 668509692, 687095643, 702324757, 716465803, 726992839, 728368677, 728429203, 734428149, 741703752, 747698523, 279083541, 304501150, 327978887, 352348438, 377273554, 403063646, 429919973, 458166441, 488645439, 515800550, 544839738, 570996309, 150725302, 172033752, 194348213, 217582532, 243221252, 270734913, 298134118, 324980747, 350890005, 373978508, 394571392, 414271289)
+data1$"Egg Production (kg/person/year)" <- data1$`Eggs Production (tonnes)` * 1000 / data1$`Population total`
+
+p1 <- ggplot(data1, mapping = aes(x = Year, y = `Egg Production (kg/person/year)`, color = Entity)) + 
+    geom_line(size = 2) +
+    geom_point(size = 3) + 
+    ggtitle('Egg Production', subtitle = 'kilogram per person per year')
+
+
+```
+```{r}
+data2 <- read_csv("eggDayPro/per-capita-egg-consumption-kilograms-per-year.csv")
+data2 = dplyr::filter(data2, data2$Entity == c("Northern America", "South America", "Asia", "Europe", "Africa"))
+
+names(data2)[names(data2) == 'Eggs - Food supply quantity (kg/capita/yr) (FAO, 2020)'] <- 'Egg Consumption (kg/person/year)'
+p2 <- ggplot(data2, mapping = aes(x = Year, y = `Egg Consumption (kg/person/year)`, color = Entity)) + 
+     geom_line(size = 2) +
+     geom_point(size = 3) + ggtitle('Egg Consumption', subtitle = 'kilogram per consumer per year')
+```
+
+
+```{r}
+library(cowplot)
+plot_grid(p1, p2, ncol = 2, nrow = 1)
+
+```
